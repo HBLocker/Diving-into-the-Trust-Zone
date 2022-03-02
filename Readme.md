@@ -99,7 +99,7 @@ TEE_Result TA_EXPORT TA_InvokeCommandEntryPoint(void *sessionContext,
 ```
 
 Next  OpenSession is invoked which follows the following Structure:
-```
+```c
 TEEC_Result TEEC_OpenSession(TEEC_Context *context,
 			     TEEC_Session *session,
 			     const TEEC_UUID *destination,
@@ -128,7 +128,7 @@ TEEC_Result TEEC_OpenSession(TEEC_Context *context,
  *
 ```
 In the Trusted Space OpensessionentryPoint is invoked:
-```
+```c
 TEE_Result TA_EXPORT TA_OpenSessionEntryPoint(uint32_t paramTypes,
 				TEE_Param params[TEE_NUM_PARAMS],
 				void **sessionContext);
@@ -143,7 +143,7 @@ TEE_Result TA_EXPORT TA_OpenSessionEntryPoint(uint32_t paramTypes,
                                                                                 
 After the session has been created the session is then closed with TEEC_CloseSession:
 
-```
+```c
 void TEEC_CloseSession(TEEC_Session *session);
 
 * TEEC_CloseSession() - Closes the session which has been opened with the
@@ -156,7 +156,7 @@ void TA_EXPORT TA_CloseSessionEntryPoint(void *sessionContext);
 ```
 
 Finaly the context is destroyed meaning it can not be ran and will have to be reinitialized again with TEEC_Context.
-```
+```c
 void TEEC_FinalizeContext(TEEC_Context *context);
 
 Destroys a context holding connection information on the specific TEE.
