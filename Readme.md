@@ -39,20 +39,23 @@ Commands can be used to communicate between the non-secure world and the secure 
         #Client Application#                 #                #Trusteed Application#         
         ####################                                  ######################                     
        TEEC_Context               <---------------------->		TA_CreateEntryPoint     
-          				                           #  
+            .   			     #                                .
        TEEC_Opensession           <---------------------->		TA_OpenSessionEntryPoint 
-                                            #                                .  
+            .                                #                                .  
        TEEC_InvokeCommand         <---------------------->		TA_InvokeCommandEntryPoint 
-                          	                #                                .  
-       TEEC_CloseSession	         <---------------------->		TA_CloseSessionEntryPoint 
-                                  	        #                                .  
+            .             	             #                                .  
+       TEEC_CloseSession	  <---------------------->		TA_CloseSessionEntryPoint 
+            .                     	     #                                .  
        TEEC_FinalizeContext       <---------------------->		TA_DestoryEntryPoint 
 
 ```
 
+  ### TEEC_Context               <---------------------->	         	TA_CreateEntryPoint   
+ This function initializes a new TEE Context, forming a connection between this Client Application and the
+TEE identified by the string identifier name. 
 
 ```c
-
+ 
  TEEC_InitializeContext() - Initializes a context holding connection
  * information on the specific TEE, designated by the name string.
 
@@ -97,6 +100,10 @@ TEE_Result TA_EXPORT TA_InvokeCommandEntryPoint(void *sessionContext,
  * - paramTypes: the types of the four parameters.
  * - params: a pointer to an array of four parameters.                
 ```
+###  TEEC_Opensession           <---------------------->		TA_OpenSessionEntryPoint 
+
+This function opens a new Session between the Client Application and the specified Trusted Application
+
 
 Next  OpenSession is invoked which follows the following Structure:
 ```c
@@ -128,6 +135,7 @@ TEEC_Result TEEC_OpenSession(TEEC_Context *context,
  *
 ```
 In the Trusted Space OpensessionentryPoint is invoked:
+
 ```c
 TEE_Result TA_EXPORT TA_OpenSessionEntryPoint(uint32_t paramTypes,
 				TEE_Param params[TEE_NUM_PARAMS],
@@ -140,7 +148,10 @@ TEE_Result TA_EXPORT TA_OpenSessionEntryPoint(uint32_t paramTypes,
  *   Trusted Application instance with an opaque void* data pointer
 
 ```
-                                                                                
+### TEEC_CloseSession	  <---------------------->		TA_CloseSessionEntryPoint 
+ This function closes a Session which has been opened with a Trusted Application.
+All Commands within the Session MUST have completed before calling this function.
+The Implementation MUST do nothing if the session parameter is NULL                                                                               
 After the session has been created the session is then closed with TEEC_CloseSession:
 
 ```c
