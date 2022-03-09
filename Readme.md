@@ -239,7 +239,7 @@ The data taken in are
   return 0;
 }
 ```
-Now if we remeber what TEC_OPensession takes in this may help get a undertanding of what is going on here:
+Now if we remeber what TEEC_OpenSession takes in this may help get a undertanding of what is going on here:
 ```c++
 
  iVar2 = TEEC_OpenSession(pTVar1,this + 0x1a8,&DAT_00100f90,0,0,0,0);
