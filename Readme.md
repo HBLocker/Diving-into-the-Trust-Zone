@@ -172,3 +172,79 @@ void TEEC_FinalizeContext(TEEC_Context *context);
 
 Destroys a context holding connection information on the specific TEE.
 ```
+
+### Trusted Kernel -  Gatekeeper 
+
+Now we have some understadning of the TrustZone, we should dive into it and see how this works....
+
+I was going to use QTEE but I feel I would not be writing anything of use. I deviced to look into how Gatekeeping works and the use in mobile phones. After some Googling, I found someone had dumped the contents of their Blackview BV6100 online. The libary we are going to be looking into is gatekeeper.trustkernel.so 
+
+
+
+
+
+### What is the GateKeeper?
+
+The gatekeeper us used to perform device authentication in a TEE. The Gatekeeper enrolls and verifies passwords via HMAC with an hardware backed secret. When the user verifies its passwords the GateKeeper uses its TEE-derived shared secret to sign the authentication to send to the hardware-backed-keystore. 
+
+![image](https://source.android.com/security/images/gatekeeper-flow.png)
+
+The first stage of this libary is to verfiy if the device is the correct device..
+
+```c++
+  if (iVar1 == 0) {
+    this = (TrustKernelGateKeeperDevice *)operator.new(0x1b0);
+    gatekeeper::TrustKernelGateKeeperDevice::TrustKernelGateKeeperDevice(this,param_1);
+    uVar3 = gatekeeper::TrustKernelGateKeeperDevice::hw_device();
+    uVar2 = 0;
+    *param_3 = uVar3;
+  }
+```
+TrustKernelGateKeeperDevice is used to verify what device is being used, once the device version has been validated OpenTEESession is called:
+
+```c++
+gatekeeper::TrustKernelGateKeeperDevice::TrustKernelGateKeeperDevice
+          (TrustKernelGateKeeperDevice *this,hw_module_t *param_1)
+
+{
+  __android_log_print(4,"GatekeeperHAL","Init device\n");
+  *(undefined8 *)(this + 0x90) = 0;
+  OpenTEESession(this);
+```
+
+### OpenTEESession Execution flow 
+
+The main purpose of this is to flow like such to create an Entrypoint for the application to work, in our case it would be to verfiy passwords of some kind. 
+
+  TEEC_Opensession           <---------------------->		TA_OpenSessionEntryPoint 
+  The first stage is to get the context:
+
+```c++ 
+  pTVar1 = this + 0xa0;
+  iVar2 = TEEC_InitializeContext(0,pTVar1);
+```
+if the context is valid TEEC_OpenSession is called. If the ID is not 0 the session will fail.
+The data taken in are 
+
+```c++
+  iVar2 = TEEC_OpenSession(pTVar1,this + 0x1a8,&DAT_00100f90,0,0,0,0);
+  *(int *)(this + 0x98) = iVar2;
+  while (iVar2 != 0) {
+    __android_log_print(6,"GatekeeperHAL"," OpenSession failed with 0x%08x\n",iVar2);
+    sleep(1);
+    iVar2 = TEEC_OpenSession(pTVar1,this + 0x1a8,&DAT_00100f90,0,0,0,0);
+    *(int *)(this + 0x98) = iVar2;
+  }
+  __android_log_print(4,"GatekeeperHAL","Open session successfully\n");
+  return 0;
+}
+```
+Now if we remeber what TEC_OPensession takes in this may help get a undertanding of what is going on here:
+```c++
+
+ iVar2 = TEEC_OpenSession(pTVar1,this + 0x1a8,&DAT_00100f90,0,0,0,0);
+ 
+ iVar2 = TEEC_OpenSession(session,destination + connectionMethod,&connectionData,0,0,0,0);
+ ```
+
+
