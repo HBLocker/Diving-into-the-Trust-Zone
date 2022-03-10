@@ -202,7 +202,7 @@ The HAL of Android manages many hardware access interfaces from modules, each mo
 
 The first stage is to initialize the device, first the device is opened, which returns the ID,  this means it needs to know what the ID of the device. TrustKernelGateKeeperDevice is used to get hw_module_t which is a uint_32 tag, if the device is the correct, the authentication method will begin. 
 
-```
+```c++
 gatekeeper::TrustKernelGateKeeperDevice::TrustKernelGateKeeperDevice
 (TrustKernelGateKeeperDevice *this,hw_module_t *param_1)
 {
@@ -241,6 +241,31 @@ gatekeeper::TrustKernelGateKeeperDevice::TrustKernelGateKeeperDevice
 ```
 
 
+### Close_Device 
+
+close_device is used to close the device, operator.delete(param_1) deletes the device handle. 
+
+```c++
+undefined8 gatekeeper::TrustKernelGateKeeperDevice::close_device(hw_device_t *param_1)
+
+{
+  if (param_1 != (hw_device_t *)0x0) {
+    __android_log_print(4,"GatekeeperHAL","Close device\n");
+    TEEC_CloseSession(param_1 + 0x1a8);
+    TEEC_FinalizeContext(param_1 + 0xa0);
+    operator.delete(param_1);
+  }
+  return 0;
+}
+
+
+
+```
+### enroll
+
+
+
+### verify 
 
 
 
