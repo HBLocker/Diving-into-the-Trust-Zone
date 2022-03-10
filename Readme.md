@@ -243,7 +243,7 @@ gatekeeper::TrustKernelGateKeeperDevice::TrustKernelGateKeeperDevice
 
 ### Close_Device 
 
-close_device is used to close the device, operator.delete(param_1) deletes the device handle. 
+close_device is used to close the device, TEEC_CloseSession(param_1 + 0x1a8); is first called, closing the session created. Then TEEC_FinalizeContext is then called which then closed the connection. Finaly operator.delete(param_1); is called which deeltes hw_delete_t. 
 
 ```c++
 undefined8 gatekeeper::TrustKernelGateKeeperDevice::close_device(hw_device_t *param_1)
