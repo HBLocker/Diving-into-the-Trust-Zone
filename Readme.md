@@ -185,34 +185,64 @@ I was going to use QTEE but I feel I would not be writing anything of use. I dev
 
 
 
-### What is the GateKeeper?
+### What is a GateKeeper and HAL?
 
-The gatekeeper us used to perform device authentication in a TEE. The Gatekeeper enrolls and verifies passwords via HMAC with an hardware backed secret. When the user verifies its passwords the GateKeeper uses its TEE-derived shared secret to sign the authentication to send to the hardware-backed-keystore. 
+The main purpose of the Gatekeeper function is used to verify the password lock pattern of the device. When the user verifies their passwords stored on an android device, the Gatekeeper uses the TEE-shared secret to sign an authentication to the hardware-backed keystore. 
+
+The hardware abstraction layer (HAL) is part of the Android OS and runs within user space. 
+
+This shields the implementation details of the hardware driver module downward, providing hardware access service upward. Through the Hardware Abstraction Layer (HAL)
+The Android system is divided into two main layers, supporting hardware devices on one layer in user space and the other layer in Kernel space. 
+
+The HAL of Android manages many hardware access interfaces from modules, each module had a dynamic link library eg foo.so  These libraries need to obey the android specification, otherwise they will not work. In Android each hardware abstraction layer module is described by hw_module_t and each device by hw_device_t
 
 ![image](https://source.android.com/security/images/gatekeeper-flow.png)
 
-The first stage of this libary is to verfiy if the device is the correct device..
+### Initialization 
 
-```c++
-  if (iVar1 == 0) {
-    this = (TrustKernelGateKeeperDevice *)operator.new(0x1b0);
-    gatekeeper::TrustKernelGateKeeperDevice::TrustKernelGateKeeperDevice(this,param_1);
-    uVar3 = gatekeeper::TrustKernelGateKeeperDevice::hw_device();
-    uVar2 = 0;
-    *param_3 = uVar3;
-  }
+The first stage is to initialize the device, first the device is opened, which returns the ID,  this means it needs to know what the ID of the device. TrustKernelGateKeeperDevice is used to get hw_module_t which is a uint_32 tag, if the device is the correct, the authentication method will begin. 
+
 ```
-TrustKernelGateKeeperDevice is used to verify what device is being used, once the device version has been validated OpenTEESession is called:
-
-```c++
 gatekeeper::TrustKernelGateKeeperDevice::TrustKernelGateKeeperDevice
-          (TrustKernelGateKeeperDevice *this,hw_module_t *param_1)
-
+(TrustKernelGateKeeperDevice *this,hw_module_t *param_1)
 {
   __android_log_print(4,"GatekeeperHAL","Init device\n");
   *(undefined8 *)(this + 0x90) = 0;
+  *(undefined8 *)(this + 0x68) = 0;
+  *(undefined8 *)(this + 0x60) = 0;
+  *(undefined8 *)(this + 0x78) = 0;
+  *(undefined8 *)(this + 0x70) = 0;
+  *(undefined8 *)(this + 0x88) = 0;
+  *(undefined8 *)(this + 0x80) = 0;
+  *(undefined8 *)(this + 0x48) = 0;
+  *(undefined8 *)(this + 0x40) = 0;
+  *(undefined8 *)(this + 0x58) = 0;
+  *(undefined8 *)(this + 0x50) = 0;
+  *(undefined8 *)(this + 0x28) = 0;
+  *(undefined8 *)(this + 0x20) = 0;
+  *(undefined8 *)(this + 0x38) = 0;
+  *(undefined8 *)(this + 0x30) = 0;
+  *(undefined8 *)(this + 8) = 0;
+  *(undefined8 *)this = 0;
+  *(undefined8 *)(this + 0x18) = 0;
+  *(undefined8 *)(this + 0x10) = 0;
+  *(hw_module_t **)(this + 8) = param_1;
+  *(undefined8 *)this = 0x148574454;
+  
+  //important stuff 
+  *(code **)(this + 0x70) = close_device;
+  *(code **)(this + 0x78) = enroll;
+  *(code **)(this + 0x80) = verify;
+  *(undefined8 *)(this + 0x88) = 0;
   OpenTEESession(this);
+  *(undefined4 *)(this + 0x98) = 0;
+  return;
+}
 ```
+
+
+
+
 
 ### OpenTEESession Execution flow 
 
