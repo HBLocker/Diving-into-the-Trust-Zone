@@ -207,23 +207,7 @@ gatekeeper::TrustKernelGateKeeperDevice::TrustKernelGateKeeperDevice
 (TrustKernelGateKeeperDevice *this,hw_module_t *param_1)
 {
   __android_log_print(4,"GatekeeperHAL","Init device\n");
-  *(undefined8 *)(this + 0x90) = 0;
-  *(undefined8 *)(this + 0x68) = 0;
-  *(undefined8 *)(this + 0x60) = 0;
-  *(undefined8 *)(this + 0x78) = 0;
-  *(undefined8 *)(this + 0x70) = 0;
-  *(undefined8 *)(this + 0x88) = 0;
-  *(undefined8 *)(this + 0x80) = 0;
-  *(undefined8 *)(this + 0x48) = 0;
-  *(undefined8 *)(this + 0x40) = 0;
-  *(undefined8 *)(this + 0x58) = 0;
-  *(undefined8 *)(this + 0x50) = 0;
-  *(undefined8 *)(this + 0x28) = 0;
-  *(undefined8 *)(this + 0x20) = 0;
-  *(undefined8 *)(this + 0x38) = 0;
-  *(undefined8 *)(this + 0x30) = 0;
-  *(undefined8 *)(this + 8) = 0;
-  *(undefined8 *)this = 0;
+ 
   *(undefined8 *)(this + 0x18) = 0;
   *(undefined8 *)(this + 0x10) = 0;
   *(hw_module_t **)(this + 8) = param_1;
