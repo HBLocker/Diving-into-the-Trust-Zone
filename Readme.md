@@ -256,7 +256,16 @@ The verify function is used to verifiy the devices. The params it takes in are t
 //Based from Androids documentation 
 undefined8 gatekeeper::TrustKernelGateKeeperDevice::verify(gatekeeper_device *dev, uid,  challenge, *enrolled_password_handle, 
 enrolled_password_handle_length, *provided_password,provided_password_length, 
-**auth_token, *auth_token_length, *request_reenroll)
+**auth_token, *auth_token_length, *request_reenroll);
+
+if (((dev != (gatekeeper_device *)0x0) && (enrolled_password_handle != (uchar *)0x0)) &&(provided_password != (uchar *)0x0)) 
+{
+ 	uVar1 = Verify((TrustKernelGateKeeperDevice *)gatekeeper_device *dev, uid,  challenge, *enrolled_password_handle, 
+	enrolled_password_handle_length, *provided_password,provided_password_length, 
+	**auth_token, *auth_token_length, *request_reenroll)
+return uVar1;
+ }
+  return 0xffffffea;
 ```
 
 ```c++
