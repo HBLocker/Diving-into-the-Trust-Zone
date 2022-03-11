@@ -250,6 +250,33 @@ undefined8 gatekeeper::TrustKernelGateKeeperDevice::close_device(hw_device_t *pa
 
 
 ### verify 
+The verify function is used to verifiy the devices. The params it takes in are the lengh of the password, from the Android documentation we can put the two together to get an underdtanding of what is happening here:
+
+```c++
+//Based from Androids documentation 
+undefined8 gatekeeper::TrustKernelGateKeeperDevice::verify(const struct gatekeeper_device *dev, uint32_t uid, uint64_t challenge, const uint8_t *enrolled_password_handle, uint32_t enrolled_password_handle_length, 
+const uint8_t *provided_password, uint32_t provided_password_length, uint8_t **auth_token, 
+uint32_t *auth_token_length, bool *request_reenroll)
+```
+
+```c++
+//gatekeeper.trustedkernel.so
+undefined8 gatekeeper::TrustKernelGateKeeperDevice::verify
+          (gatekeeper_device *param_1,uint param_2,ulong param_3,uchar *param_4,uint param_5,
+          uchar *param_6,uint param_7,uchar **param_8,uint *param_9,bool *param_10)
+
+{
+  undefined8 uVar1;
+  
+  if (((param_1 != (gatekeeper_device *)0x0) && (param_4 != (uchar *)0x0)) &&
+     (param_6 != (uchar *)0x0)) {
+    uVar1 = Verify((TrustKernelGateKeeperDevice *)param_1,param_2,param_3,param_4,param_5,param_6,
+                   param_7,param_8,param_9,param_10);
+    return uVar1;
+  }
+  return 0xffffffea;
+}
+```
 
 
 
