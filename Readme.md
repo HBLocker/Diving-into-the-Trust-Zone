@@ -254,7 +254,9 @@ The verify function is used to verifiy the devices. The params it takes in are t
 
 ```c++
 //Based from Androids documentation 
-undefined8 gatekeeper::TrustKernelGateKeeperDevice::verify(const struct gatekeeper_device *dev, uid,  challenge, *enrolled_password_handle,  enrolled_password_handle_length, *provided_password,provided_password_length, **auth_token, *auth_token_length, *request_reenroll)
+undefined8 gatekeeper::TrustKernelGateKeeperDevice::verify(gatekeeper_device *dev, uid,  challenge, *enrolled_password_handle, 
+enrolled_password_handle_length, *provided_password,provided_password_length, 
+**auth_token, *auth_token_length, *request_reenroll)
 ```
 
 ```c++
