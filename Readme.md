@@ -247,10 +247,46 @@ undefined8 gatekeeper::TrustKernelGateKeeperDevice::close_device(hw_device_t *pa
 ```
 ### enroll
 
+Enroll is used to take the password blob which signs it and then returns the signature as a handle. The returned blob must follow a strict structure:
+```c++
+struct __attribute__ ((__packed__)) password_handle_t {
+    // fields included in signature
+    uint8_t version;
+    secure_id_t user_id;
+    secure_id_t authenticator_id;
+    // fields not included in signature
+    salt_t salt;
+    uint8_t signature[32];
+    bool hardware_backed;
+};
+```
+The function takes in the folowing params:
 
+```c++
+int (*enroll)(const struct gatekeeper_device *dev, uint32_t uid,
+            const uint8_t *current_password_handle, uint32_t current_password_handle_length,
+            const uint8_t *current_password, uint32_t current_password_length,
+            const uint8_t *desired_password, uint32_t desired_password_length,
+            uint8_t **enrolled_password_handle, uint32_t *enrolled_password_handle_length);
+
+```
+
+```c++
+//gatekeeper.trustedkernel.so
+gatekeeper::TrustKernelGateKeeperDevice::enroll
+          (gatekeeper_device *param_1,uint param_2,uchar *param_3,uint param_4,uchar *param_5,
+          uint param_6,uchar *param_7,uint param_8,uchar **param_9,uint *param_10)
+	  
+	  
+//bassed from the Andorid documentaiton
+gatekeeper::TrustKernelGateKeeperDevice::enroll(gatekeeper_device *dev,uid,uchar *current_password_handle,
+current_password_handle_length,*current_password,
+           current_password_length,*desired_password,
+           desired_password_length, **enrolled_password_handle, *enrolled_password_handle_length)
+```
 
 ### verify 
-The verify function is used to verifiy the devices. The params it takes in are the lengh of the password, from the Android documentation we can put the two together to get an underdtanding of what is happening here:
+The verify  function must compare the signature produced by the provided password and ensure it matches the enrolled password handle. The params it takes in are the lengh of the password, from the Android documentation we can put the two together to get an underdtanding of what is happening here:
 
 ```c++
 //Based from Androids documentation 
