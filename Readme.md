@@ -241,9 +241,6 @@ undefined8 gatekeeper::TrustKernelGateKeeperDevice::close_device(hw_device_t *pa
   }
   return 0;
 }
-
-
-
 ```
 ### enroll
 
