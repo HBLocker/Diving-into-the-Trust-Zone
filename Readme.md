@@ -281,7 +281,20 @@ current_password_handle_length,*current_password,
            current_password_length,*desired_password,
            desired_password_length, **enrolled_password_handle, *enrolled_password_handle_length)
 ```
+After the session has been started enroll is caled with the function data to create the session with OpenTEESession. 
+```c 
 
+  lVar1 = cRead_8(tpidr_el0);
+  local_78 = *(long *)(lVar1 + 0x28);
+  __android_log_print(4,"GatekeeperHAL","Enroll\n");
+  if (*(int *)(this + 0x98) != 0) {
+    OpenTEESession(this);
+    *(undefined4 *)(this + 0x98) = 0;
+    __android_log_print(4,"GatekeeperHAL","reopen session result 0x%x\n",0);
+    uVar2 = *(uint *)(this + 0x98);
+    if (uVar2 != 0) goto LAB_001025b4;
+  }
+```
 ### verify 
 The verify  function must compare the signature produced by the provided password and ensure it matches the enrolled password handle. The params it takes in are the lengh of the password, from the Android documentation we can put the two together to get an underdtanding of what is happening here:
 
