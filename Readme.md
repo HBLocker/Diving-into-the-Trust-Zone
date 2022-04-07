@@ -242,9 +242,39 @@ undefined8 gatekeeper::TrustKernelGateKeeperDevice::close_device(hw_device_t *pa
   return 0;
 }
 ```
-### enroll
+
+### Putting it all together in order
+
+### Init 
+The first stage is to check the device, this is done with the following function. 
+
+
+```c++
+undefined8 gatekeeper(hw_module_t *module,char *name,hw_module_t *device)
+
+{
+  int gatekeeper;
+  undefined8 device;
+  TrustKernelGateKeeperDevice *gatekeeper;
+  undefined8 uVar3;
+  
+  iVar1 = strcmp(name,"gatekeeper");
+  if (iVar1 == 0) {
+    gatekeeper = (TrustKernelGateKeeperDevice *)operator.new(0x1b0);
+    gatekeeper::TrustKernelGateKeeperDevice::TrustKernelGateKeeperDevice(gatekeeper,*module);
+    *device = gatekeeper::TrustKernelGateKeeperDevice::hw_device();
+    *device = gatekeeper -> hw_device();
+  }
+  
+```
+Now the device is enrolled and verified. 
+
+
+### Enroll
 
 Enroll is used to take the password blob which signs it and then returns the signature as a handle. The returned blob must follow a strict structure:
+
+
 ```c++
 struct __attribute__ ((__packed__)) password_handle_t {
     // fields included in signature
@@ -256,6 +286,7 @@ struct __attribute__ ((__packed__)) password_handle_t {
     uint8_t signature[32];
     bool hardware_backed;
 };
+
 ```
 The function takes in the folowing params:
 
@@ -282,6 +313,8 @@ current_password_handle_length,*current_password,
            desired_password_length, **enrolled_password_handle, *enrolled_password_handle_length)
 ```
 After the session has been started enroll is caled with the function data to create the session with OpenTEESession. 
+
+
 ```c 
 
   lVar1 = cRead_8(tpidr_el0);
@@ -295,7 +328,9 @@ After the session has been started enroll is caled with the function data to cre
     if (uVar2 != 0) goto LAB_001025b4;
   }
 ```
-### verify 
+
+
+### Verify 
 The verify  function must compare the signature produced by the provided password and ensure it matches the enrolled password handle. The params it takes in are the lengh of the password, from the Android documentation we can put the two together to get an underdtanding of what is happening here:
 
 ```c++
@@ -332,14 +367,14 @@ undefined8 gatekeeper::TrustKernelGateKeeperDevice::verify
   return 0xffffffea;
 }
 ```
-
-
+## Open session
+Next the session is opened 
 
 ### TrustKernelGateKeeperDevice::OpenTEESession() flow 
 
 The main purpose of this is to flow like such to create an Entrypoint for the application to work, in our case it would be to verfiy passwords of some kind.
 
-TEEC_Context               <---------------------->		TA_CreateEntryPoint     
+#### TEEC_Context               <---------------------->		TA_CreateEntryPoint     
   The first stage is to get the context:
 
 
@@ -371,7 +406,7 @@ The data taken in are
 }
 ```
  
- TEEC_Opensession           <---------------------->		TA_OpenSessionEntryPoint  
+#### TEEC_Opensession           <---------------------->		TA_OpenSessionEntryPoint  
 
 Now if we remeber what TEEC_OpenSession takes in this may help get a undertanding of what is going on here:
 ```c++
@@ -381,5 +416,3 @@ Now if we remeber what TEEC_OpenSession takes in this may help get a undertandin
    __android_log_print(6,"GatekeeperHAL"," OpenSession failed with 0x%08x\n",result);
     sleep(1);
  ```
-
-
