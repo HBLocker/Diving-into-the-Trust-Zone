@@ -335,39 +335,51 @@ undefined8 gatekeeper::TrustKernelGateKeeperDevice::verify
 
 
 
-### OpenTEESession Execution flow 
+### TrustKernelGateKeeperDevice::OpenTEESession() flow 
 
-The main purpose of this is to flow like such to create an Entrypoint for the application to work, in our case it would be to verfiy passwords of some kind. 
+The main purpose of this is to flow like such to create an Entrypoint for the application to work, in our case it would be to verfiy passwords of some kind.
 
-  TEEC_Opensession           <---------------------->		TA_OpenSessionEntryPoint 
+TEEC_Context               <---------------------->		TA_CreateEntryPoint     
   The first stage is to get the context:
 
+
+Below shows the first stages for checking the context values if the returned value is not 0 the context will fail. 
 ```c++ 
-  pTVar1 = this + 0xa0;
-  iVar2 = TEEC_InitializeContext(0,pTVar1);
+  context = this + 0xa0; //160
+  ressult = TEEC_InitializeContext(NULL,&context);
+  *(int *)(this + 0x98) = ressult; //152
+  if (ressult != 0) { 
+    __android_log_print(6,"GatekeeperHAL"," InitializeContext failed with 0x%08x\n",ressult);
+    sleep(1);
+    ressult = TEEC_InitializeContext(0,context);
+    *(int *)(this + 0x98) = ressult; 
 ```
+
 if the context is valid TEEC_OpenSession is called. If the ID is not 0 the session will fail.
 The data taken in are 
-
 ```c++
-  iVar2 = TEEC_OpenSession(pTVar1,this + 0x1a8,&DAT_00100f90,0,0,0,0);
-  *(int *)(this + 0x98) = iVar2;
+      ressult = TEEC_OpenSession(context,session + 0x1a8,&uid,0,0,0,0);
+  *(int *)(session + 0x98) = ressult;
   while (iVar2 != 0) {
     __android_log_print(6,"GatekeeperHAL"," OpenSession failed with 0x%08x\n",iVar2);
     sleep(1);
-    iVar2 = TEEC_OpenSession(pTVar1,this + 0x1a8,&DAT_00100f90,0,0,0,0);
-    *(int *)(this + 0x98) = iVar2;
+    ressult = TEEC_OpenSession(context,session + 0x1a8,&uid,0,0,0,0);
+    *(int *)(session + 0x98) = ressult;
   }
   __android_log_print(4,"GatekeeperHAL","Open session successfully\n");
   return 0;
 }
 ```
+ 
+ TEEC_Opensession           <---------------------->		TA_OpenSessionEntryPoint  
+
 Now if we remeber what TEEC_OpenSession takes in this may help get a undertanding of what is going on here:
 ```c++
-
- iVar2 = TEEC_OpenSession(pTVar1,this + 0x1a8,&DAT_00100f90,0,0,0,0);
- 
- iVar2 = TEEC_OpenSession(session,destination + connectionMethod,&connectionData,0,0,0,0);
+   ressult = TEEC_OpenSession(context,session + 0x1a8,&uid,0,0,0,0);
+  *(int *)(session + 0x98) = ressult;
+  while (result != 0) {
+   __android_log_print(6,"GatekeeperHAL"," OpenSession failed with 0x%08x\n",result);
+    sleep(1);
  ```
 
 
