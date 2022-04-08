@@ -416,3 +416,5 @@ Now if we remeber what TEEC_OpenSession takes in this may help get a undertandin
    __android_log_print(6,"GatekeeperHAL"," OpenSession failed with 0x%08x\n",result);
     sleep(1);
  ```
+ 
+ 
