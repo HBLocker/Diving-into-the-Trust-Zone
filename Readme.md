@@ -179,7 +179,7 @@ Now we have some understadning of the TrustZone, we should dive into it and see 
 
 I was going to use QTEE but I feel I would not be writing anything of use. I deviced to look into how Gatekeeping works and the use in mobile phones. After some Googling, I found someone had dumped the contents of their Blackview BV6100 online. The libary we are going to be looking into is gatekeeper.trustkernel.so 
 
-![image](https://www.doer.ch/media/catalog/product/cache/1/image/470x470/9df78eab33525d08d6e5fb8d27136e95/m/p/mp7049-1_1.jpg)
+![image](https://www.notebookcheck.com/uploads/tx_nbc2/Blackview-BV6100.jpg)
 
 
 
